@@ -23,6 +23,16 @@ public class User {
         user.role=Role.USER;
         return user;
     }
+    public static User reconstitute(Long id, String name, String email, String password, Role role){
+        User user = new User();
+        user.id = id;
+        user.name = name;
+        user.email = email;
+        user.password = password;
+        user.role = role;
+        return user;
+    }
+
     //setters
     public void setName(String name){
         if(name == null || name.isBlank()){
@@ -30,6 +40,7 @@ public class User {
         }
         this.name = name;
     }
+    
     public void setEmail(String email){
         if(email == null || email.isBlank()){
             throw new IllegalArgumentException("Email is required");
@@ -37,8 +48,16 @@ public class User {
         if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
             throw new IllegalArgumentException("Email is invalid");
         }
-        this.email = email;
+        this.email = email.trim().toLowerCase();
     }
+
+    public void changePasswordHash(String passowordHash){
+        if(passowordHash == null || passowordHash.isBlank()){
+            throw new IllegalArgumentException("Password hash is required");
+        }
+        this.password = passowordHash;
+    }
+
     public void setPassword(String password){
         if(password == null || password.isBlank()){
             throw new IllegalArgumentException("Password is required");
@@ -54,6 +73,19 @@ public class User {
     }
     public boolean canManageUsers(){
         return isAdmin();
+    }
+
+    public void promoteToAdmin(){
+        if(isAdmin()){
+            throw new IllegalStateException("User is already an admin");
+        }
+        this.role = Role.ADMIN;
+    }
+    public void demoteFromAdmin(){
+        if(!isAdmin()){
+            throw new IllegalStateException("User is not an admin");
+        }
+        this.role = Role.USER;
     }
 
 }
