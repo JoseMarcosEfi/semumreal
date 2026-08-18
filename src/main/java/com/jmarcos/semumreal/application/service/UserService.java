@@ -18,10 +18,11 @@ public class UserService {
     }
 
     public User register(String name, String email, String password) {
-        if(userPersistencePort.findByEmail(email).isPresent()) {
-            throw new EmailAlreadyExistsException(email);
+        String normalizedEmail = User.normalizeEmail(email);
+        if (userPersistencePort.findByEmail(normalizedEmail).isPresent()) {
+            throw new EmailAlreadyExistsException(normalizedEmail);
         }
-        User user = User.create(name, email, password);
+        User user = User.create(name, normalizedEmail, password);
         user.changePasswordHash(passwordHasherPort.hash(user.getPassword()));
 
         return userPersistencePort.create(user);

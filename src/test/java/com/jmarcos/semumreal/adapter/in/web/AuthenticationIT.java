@@ -100,6 +100,42 @@ class AuthenticationIT {
     }
 
     @Test
+    void registerNormalizesEmailSoLoginWithLowercaseSucceeds() throws Exception {
+        String mixedCaseEmail = "User-" + UUID.randomUUID() + "@Example.COM";
+        String normalizedEmail = mixedCaseEmail.toLowerCase();
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerPayload("Jane", mixedCaseEmail, RAW_PASSWORD)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value(normalizedEmail));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginPayload(normalizedEmail, RAW_PASSWORD)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.email").value(normalizedEmail));
+    }
+
+    @Test
+    void registerRejectsInvalidPayload() throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerPayload("Jane", "not-an-email", "short")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void loginRejectsInvalidPayload() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginPayload("not-an-email", "short")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
     void protectedEndpointAllowsAccessWithValidJwt() throws Exception {
         String email = uniqueEmail();
         registerUser(email);

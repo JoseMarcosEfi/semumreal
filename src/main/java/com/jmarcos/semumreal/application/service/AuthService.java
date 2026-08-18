@@ -22,7 +22,7 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        String normalizedEmail = email.trim().toLowerCase();
+        String normalizedEmail = User.normalizeEmail(email);
         User user = userPersistencePort.findByEmail(normalizedEmail)
                 .orElseThrow(InvalidCredentialsException::new);
 

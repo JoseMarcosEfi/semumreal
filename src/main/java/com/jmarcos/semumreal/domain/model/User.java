@@ -41,14 +41,19 @@ public class User {
         this.name = name;
     }
     
-    public void setEmail(String email){
-        if(email == null || email.isBlank()){
+    public static String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email is required");
         }
-        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
+        return email.trim().toLowerCase();
+    }
+
+    public void setEmail(String email) {
+        String normalizedEmail = normalizeEmail(email);
+        if (!normalizedEmail.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             throw new IllegalArgumentException("Email is invalid");
         }
-        this.email = email.trim().toLowerCase();
+        this.email = normalizedEmail;
     }
 
     public void changePasswordHash(String passowordHash){

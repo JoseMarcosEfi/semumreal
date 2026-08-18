@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.jmarcos.semumreal.adapter.in.dto.request.LoginRequest;
 import com.jmarcos.semumreal.adapter.in.dto.request.RegisterUserRequest;
 import com.jmarcos.semumreal.adapter.in.dto.response.LoginResponse;
@@ -51,7 +53,7 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(schema = @Schema(implementation = RegisterUserRequest.class)))
-            @RequestBody RegisterUserRequest request) {
+            @RequestBody @Valid RegisterUserRequest request) {
         User user = userService.register(request.name(), request.email(), request.password());
         return UserResponse.from(user);
     }
@@ -63,7 +65,7 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(schema = @Schema(implementation = LoginRequest.class)))
-            @RequestBody LoginRequest request) {
+            @RequestBody @Valid LoginRequest request) {
         User user = authService.authenticate(request.email(), request.password());
         String token = jwtPort.generateToken(user);
         return LoginResponse.from(token, user);
