@@ -1,20 +1,20 @@
 package com.jmarcos.semumreal.application.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jmarcos.semumreal.domain.exception.EmailAlreadyExistsException;
 import com.jmarcos.semumreal.domain.model.User;
+import com.jmarcos.semumreal.port.out.PasswordHasherPort;
 import com.jmarcos.semumreal.port.out.UserPersistencePort;
 
 @Service
 public class UserService {
     private final UserPersistencePort userPersistencePort;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordHasherPort passwordHasherPort;
 
-    public UserService(UserPersistencePort userPersistencePort, PasswordEncoder passwordEncoder) {
+    public UserService(UserPersistencePort userPersistencePort, PasswordHasherPort passwordHasherPort) {
         this.userPersistencePort = userPersistencePort;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordHasherPort = passwordHasherPort;
     }
 
     public User register(String name, String email, String password) {
@@ -22,8 +22,7 @@ public class UserService {
             throw new EmailAlreadyExistsException(email);
         }
         User user = User.create(name, email, password);
-        String rawPassword = passwordEncoder.encode(user.getPassword());
-        user.changePasswordHash(rawPassword);
+        user.changePasswordHash(passwordHasherPort.hash(user.getPassword()));
 
         return userPersistencePort.create(user);
     }
