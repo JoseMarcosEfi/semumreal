@@ -55,6 +55,15 @@ class AuthenticationIT {
     }
 
     @Test
+    void openApiDocumentsBearerAuthForProtectedEndpoints() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.components.securitySchemes.bearerAuth.type").value("http"))
+                .andExpect(jsonPath("$.components.securitySchemes.bearerAuth.scheme").value("bearer"))
+                .andExpect(jsonPath("$.paths['/api/auth/me'].get.parameters[?(@.name=='Authorization')]").exists());
+    }
+
+    @Test
     void loginWithUnknownUserReturnsInvalidCredentials() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
