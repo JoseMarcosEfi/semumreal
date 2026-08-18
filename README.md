@@ -113,13 +113,26 @@ git clone <repository-url>
 cd semumreal
 ```
 
-2. **Configure database**
+2. **Configure local secrets and database**
 
-Create `application-local.properties`:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/semumreal_local
-spring.datasource.username=postgres
-spring.datasource.password=your_password
+Copy the example file and edit your local values (never commit `application-local.properties`):
+
+```bash
+cp src/main/resources/application-local.example.properties src/main/resources/application-local.properties
+```
+
+Generate a JWT secret:
+
+```bash
+openssl rand -base64 32
+```
+
+Paste the result into `app.jwt.secret` in `application-local.properties`, along with your PostgreSQL credentials.
+
+Alternatively, set the environment variable before running:
+
+```bash
+export APP_JWT_SECRET="your-base64-secret"
 ```
 
 3. **Run the application**
@@ -190,6 +203,7 @@ src/main/resources/db/changelog/
 - Spring Security integration
 - Role-based access control (RBAC)
 - Secure password handling
+- JWT secret via environment variable (`APP_JWT_SECRET`) or local profile — never committed
 - Protected domain model operations
 
 ## 📦 Build
