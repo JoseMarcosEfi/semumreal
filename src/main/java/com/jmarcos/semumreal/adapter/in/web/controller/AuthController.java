@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import com.jmarcos.semumreal.adapter.in.dto.request.GoogleLoginRequest;
 import com.jmarcos.semumreal.adapter.in.dto.request.LoginRequest;
 import com.jmarcos.semumreal.adapter.in.dto.request.RegisterUserRequest;
 import com.jmarcos.semumreal.adapter.in.dto.response.LoginResponse;
 import com.jmarcos.semumreal.adapter.in.dto.response.UserResponse;
 import com.jmarcos.semumreal.adapter.in.web.config.OpenApiConfig;
 import com.jmarcos.semumreal.application.service.AuthService;
+import com.jmarcos.semumreal.application.service.GoogleAuthService;
 import com.jmarcos.semumreal.application.service.UserService;
 import com.jmarcos.semumreal.domain.exception.InvalidCredentialsException;
 import com.jmarcos.semumreal.domain.model.User;
@@ -37,11 +39,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 public class AuthController {
     private final UserService userService;
     private final AuthService authService;
+    private final GoogleAuthService googleAuthService;
     private final JwtPort jwtPort;
 
-    public AuthController(UserService userService, AuthService authService, JwtPort jwtPort) {
+    public AuthController(
+            UserService userService,
+            AuthService authService,
+            GoogleAuthService googleAuthService,
+            JwtPort jwtPort) {
         this.userService = userService;
         this.authService = authService;
+        this.googleAuthService = googleAuthService;
         this.jwtPort = jwtPort;
     }
 
@@ -67,6 +75,19 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = LoginRequest.class)))
             @RequestBody @Valid LoginRequest request) {
         User user = authService.authenticate(request.email(), request.password());
+        String token = jwtPort.generateToken(user);
+        return LoginResponse.from(token, user);
+    }
+
+    @SecurityRequirements
+    @Operation(summary = "Autenticar usuário com Google")
+    @PostMapping(value = "/google", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public LoginResponse loginWithGoogle(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = GoogleLoginRequest.class)))
+            @RequestBody @Valid GoogleLoginRequest request) {
+        User user = googleAuthService.authenticate(request.idToken());
         String token = jwtPort.generateToken(user);
         return LoginResponse.from(token, user);
     }
