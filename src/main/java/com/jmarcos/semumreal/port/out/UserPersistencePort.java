@@ -11,5 +11,9 @@ public interface UserPersistencePort {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByGoogleSubject(String googleSubject);
+
+    User update(User user);
+
     void deleteById(Long id);
 }

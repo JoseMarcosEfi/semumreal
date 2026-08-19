@@ -16,7 +16,8 @@ public class UserMapper {
                 userEntity.getName(),
                 userEntity.getEmail(),
                 userEntity.getPassword(),
-                userEntity.getRole());
+                userEntity.getRole(),
+                userEntity.getGoogleSubject());
     }
     public UserEntity toEntity(User user){
         if(user == null){
@@ -27,7 +28,8 @@ public class UserMapper {
             user.getName(),
             user.getEmail(),
             user.getPassword(),
-            user.getRole()
+            user.getRole(),
+            user.getGoogleSubject()
         );
     }
 }

@@ -29,9 +29,11 @@ public class UserEntity {
     private String name;
     @Column( nullable = false, unique = true, length = 255)
     private String email;
-    @Column( nullable = false, length = 255)
+    @Column(length = 255)
     private String password;
     @Column( nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "google_subject", unique = true, length = 255)
+    private String googleSubject;
 }

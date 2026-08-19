@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: "2"
+      author: jmarcos
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: google_subject
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: true
+        - dropNotNullConstraint:
+            tableName: users
+            columnName: password
+            columnDataType: VARCHAR(255)

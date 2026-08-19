@@ -8,5 +8,8 @@ import com.jmarcos.semumreal.adapter.out.persistence.entity.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
+
+    Optional<UserEntity> findByGoogleSubject(String googleSubject);
+
     boolean existsByEmail(String email);
 }

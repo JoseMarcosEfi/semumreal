@@ -40,6 +40,19 @@ public class UserPersistenceAdapter implements UserPersistencePort{
     }
 
     @Override
+    public Optional<User> findByGoogleSubject(String googleSubject) {
+        return userRepository.findByGoogleSubject(googleSubject)
+                .map(userMapper::toDomain);
+    }
+
+    @Override
+    public User update(User user) {
+        UserEntity entity = userMapper.toEntity(user);
+        UserEntity saved = userRepository.save(entity);
+        return userMapper.toDomain(saved);
+    }
+
+    @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
