@@ -26,7 +26,7 @@ public class AuthService {
         User user = userPersistencePort.findByEmail(normalizedEmail)
                 .orElseThrow(InvalidCredentialsException::new);
 
-        if (!passwordHasherPort.matches(password, user.getPassword())) {
+        if (user.getPassword() == null || !passwordHasherPort.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException();
         }
 

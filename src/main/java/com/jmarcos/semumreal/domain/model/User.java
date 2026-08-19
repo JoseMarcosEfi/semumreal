@@ -14,6 +14,7 @@ public class User {
     private String email;
     private String password;
     private Role role;
+    private String googleSubject;
 
     public static User create(String name, String email, String password){
         User user = new User();
@@ -23,14 +24,45 @@ public class User {
         user.role=Role.USER;
         return user;
     }
+
+    public static User createFromGoogle(String name, String email, String googleSubject) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.linkGoogleSubject(googleSubject);
+        user.role = Role.USER;
+        return user;
+    }
+
     public static User reconstitute(Long id, String name, String email, String password, Role role){
+        return reconstitute(id, name, email, password, role, null);
+    }
+
+    public static User reconstitute(
+            Long id,
+            String name,
+            String email,
+            String password,
+            Role role,
+            String googleSubject) {
         User user = new User();
         user.id = id;
         user.name = name;
         user.email = email;
         user.password = password;
         user.role = role;
+        user.googleSubject = googleSubject;
         return user;
+    }
+
+    public void linkGoogleSubject(String googleSubject) {
+        if (googleSubject == null || googleSubject.isBlank()) {
+            throw new IllegalArgumentException("Google subject is required");
+        }
+        if (this.googleSubject != null && !this.googleSubject.equals(googleSubject)) {
+            throw new IllegalStateException("User is already linked to another Google account");
+        }
+        this.googleSubject = googleSubject;
     }
 
     //setters

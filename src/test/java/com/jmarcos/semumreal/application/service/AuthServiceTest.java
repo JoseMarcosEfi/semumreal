@@ -84,6 +84,17 @@ class AuthServiceTest {
                 () -> authService.authenticate(EMAIL, RAW_PASSWORD));
     }
 
+    @Test
+    void authenticateGoogleOnlyUserWithPasswordThrowsInvalidCredentials() {
+        User googleUser = User.reconstitute(1L, "Jane", EMAIL, null, Role.USER, "google-sub");
+        when(userPersistencePort.findByEmail(EMAIL)).thenReturn(Optional.of(googleUser));
+
+        assertThrows(InvalidCredentialsException.class,
+                () -> authService.authenticate(EMAIL, RAW_PASSWORD));
+
+        verify(passwordHasherPort, never()).matches(anyString(), anyString());
+    }
+
     private static User storedUser() {
         return User.reconstitute(1L, "Jane", EMAIL, PASSWORD_HASH, Role.USER);
     }
